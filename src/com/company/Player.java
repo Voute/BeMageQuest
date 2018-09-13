@@ -55,7 +55,7 @@ public class Player {
             if (targetItem == null) {
                 System.out.println("Ты ищешь [" + target + "], но его нигде нет.");
             } else {
-                Item newItem = GameObjects.combine(objectItem, targetItem);
+                Item newItem = GameObjects.combineItems(objectItem, targetItem);
                 if (newItem == null) {
                     System.out.println("Ты пробуешь применить [" + objectItem.name + "] к [" + targetItem.name + ", " +
                             "но ничего путного не получается.");
