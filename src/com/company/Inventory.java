@@ -14,8 +14,8 @@ public class Inventory {
         items.add(item);
     }
 
-    public void remove(Item item) {
-        items.remove(item);
+    public boolean remove(Item item) {
+        return items.remove(item);
     }
 
     public Item findByName(String name) {
@@ -30,7 +30,8 @@ public class Inventory {
     public String getPrintedItems() {
         StringBuilder printedItems = new StringBuilder();
         for (int i = 0; i < items.size(); i++) {
-            printedItems.append(i + ": [" + items.get(i).name + "]\n");
+            printedItems.append(items.get(i).printedName);
+            if (i + 1 < items.size()) printedItems.append(", ");
         }
         System.out.println(printedItems);
         return printedItems.toString();

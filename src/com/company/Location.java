@@ -5,20 +5,18 @@ import java.util.Map;
 
 public class Location {
 
-    private final String description;
-    private final Inventory inventory;
     final String name;
+    final String printedName;
+    final String description;
     final Map<Directions, Location> paths;
+    private final Inventory inventory;
 
     public Location(String name, String description, Inventory inventory, Map<Directions, Location> paths) {
         this.name = name;
+        printedName = "*" + name + "*";
         this.description = description;
         this.inventory = inventory;
         this.paths = paths;
-    }
-
-    public void printDescription() {
-        System.out.println(description);
     }
 
     public String getPrintedItems() {
@@ -31,9 +29,9 @@ public class Location {
 
     public boolean removeItem(Item item) {
         if (item.isMovable) {
-            inventory.remove(item);
-            return true;
+            return inventory.remove(item);
         }
         return false;
     }
+
 }
