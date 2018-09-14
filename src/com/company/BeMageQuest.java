@@ -1,5 +1,6 @@
 package com.company;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -20,9 +21,9 @@ public class BeMageQuest {
             "[сумка] или [с]: показывает предметы, которые у персонажа при себе"
     };
 
-    public static void main(String[] args) {
-        consoleInput = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
 
+        consoleInput = new Scanner(System.in);
         System.out.println("Добро пожаловать в Be Mage Quest!");
         String playerName = getPlayerInput("Как твое имя?");
         System.out.println("Приветствую тебя, " + playerName + "!");
