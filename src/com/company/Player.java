@@ -18,7 +18,7 @@ public class Player {
 
     public void lookAround() {
         System.out.println(printedName + " осматривается вокруг себя.");
-        String locationItemsOutput = location.getPrintedItems();
+        String locationItemsOutput = location.getAllItemsDescription();
         if (locationItemsOutput == "") {
             System.out.println("К сожалению тут нет ничего, на что стоило бы еще обратить внимание.");
         } else {
@@ -29,14 +29,23 @@ public class Player {
     }
 
     public void go(String direction) {
-        Location newLocation = location.getLocation(Directions.valueOf(direction));
-        if (newLocation != null) {
-            location = newLocation;
-            System.out.println(printedName + " перемещается в " + newLocation.printedName);
-            System.out.println(newLocation.description);
+        Directions dir = Directions.findDirectionByName(direction);
+        if (dir != null) {
+            Location newLocation = location.getLocation(Directions.valueOf(direction));
+
+            if (newLocation != null) {
+                location = newLocation;
+                System.out.println(printedName + " перемещается в " + newLocation.printedName);
+                System.out.println(newLocation.description);
+            } else {
+                System.out.println(printedName + " пытается пойти по направлению '" + direction + "', но там некуда идти.");
+            }
+
         } else {
-            System.out.println(printedName + " пытается пойти по направлению " + direction + ", но там некуда идти.");
+            System.out.println(printedName + " пытается определиться, где направление '" + direction +
+            "', но ничего не получается.");
         }
+
     }
 
     public void take(String itemName) {
@@ -48,7 +57,7 @@ public class Player {
                 inventory.add(item);
                 System.out.println(printedName + " берет " + item.printedName + " и прячет куда-то в одежду.");
             } else {
-                System.out.println(printedName + "пытается взять " + item.printedName + ", но что-то ему мешает. Не то вес, не то boolean значение поля предмета.");
+                System.out.println(printedName + " пытается взять " + item.printedName + ", но что-то ему мешает. Не то вес, не то boolean значение поля предмета.");
             }
         }
     }
@@ -59,38 +68,39 @@ public class Player {
         if (objectItem == null) {
             System.out.println(printedName + " очень хочет использовать [" + objectName + "], но его не оказывается под рукой." +
                     " Хорошо бы иметь [" + objectName +  "] при себе.");
-        } else {
-            Item targetItem = inventory.findByName(target);
+            return;
+        }
 
-            // проверяем, есть ли цель в инвенторях игрока и локации
-            if (targetItem == null) targetItem = location.findItemByName(target);
-            if (targetItem == null) {
-                System.out.println(printedName + " ищет [" + target + "], но его нигде нет.");
-            } else {
+        Item targetItem = inventory.findByName(target);
 
-                Combo combo = GameObjects.findCOmbo(objectItem, targetItem);
-                if (combo == null) {
-                    System.out.println(printedName + " пробует применить " + objectItem.printedName + " к " + targetItem.printedName + ", " +
-                            "но ничего путного не получается.");
-                } else {
-                    Item newItem = combo.result;
-                    System.out.println(combo.message);
-                    if (newItem != null) {
-                        inventory.add(newItem);
-                        if (newItem.name.equals("кристалл")) {
-                            isWinner = true;
-                        }
-                    }
-                    if (combo.removeObjectAfterUsage) {
-                        inventory.remove(objectItem);
-                    }
-                    if (combo.removeTargetAfterUsage) {
-                        if (inventory.remove(targetItem)) location.removeItem(targetItem);
+        // проверяем, есть ли цель в инвенторях игрока и локации
+        if (targetItem == null) targetItem = location.findItemByName(target);
+        if (targetItem == null) {
+            System.out.println(printedName + " ищет [" + target + "], но его нигде нет.");
+            return;
+        }
 
-                    }
+        Combo combo = ComboWarehouse.findCOmbo(objectItem, targetItem);
+        if (combo == null) {
+            System.out.println(printedName + " пробует применить " + objectItem.printedName + " к " + targetItem.printedName + ", " +
+                    "но ничего путного не получается.");
+            return;
+        }
 
-                }
+        Item newItem = combo.result;
+        System.out.println(combo.message);
+        if (newItem != null) {
+            inventory.add(newItem);
+            if (newItem.name.equals("кристалл")) {
+                isWinner = true;
             }
+        }
+        if (combo.removeObjectAfterUsage) {
+            inventory.remove(objectItem);
+        }
+        if (combo.removeTargetAfterUsage) {
+            if (inventory.remove(targetItem)) location.removeItem(targetItem);
+
         }
     }
 
@@ -106,7 +116,7 @@ public class Player {
     }
 
     public void checkInventory() {
-        String itemsOutput = inventory.getPrintedItems();
+        String itemsOutput = inventory.toString();
         if (itemsOutput == "") {
             System.out.println(printedName + " обшаривает свою одежду, но ничего не находит.");
         } else {

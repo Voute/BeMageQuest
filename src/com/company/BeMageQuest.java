@@ -1,11 +1,12 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
 public class BeMageQuest {
 
-    private final static Scanner consoleInput;
+    private static Scanner consoleInput;
     private final static String[] NAME_ENDINGS = {"Упертый Баг", "Магический Кейс", "Стремительный Хотфикс", "Уставший Ордер"};
     private final static String[] COMMANDS_HELP = {"***[команда] или [сокращенный вариант команды]: описание действия - пример команды***",
             "[команды] или [к]: выводит на экран список доступных команд",
@@ -19,17 +20,14 @@ public class BeMageQuest {
             "[сумка] или [с]: показывает предметы, которые у персонажа при себе"
     };
 
-    static {
-        consoleInput = new Scanner(System.in);
-    }
-
     public static void main(String[] args) {
+        consoleInput = new Scanner(System.in);
 
         System.out.println("Добро пожаловать в Be Mage Quest!");
         String playerName = getPlayerInput("Как твое имя?");
         System.out.println("Приветствую тебя, " + playerName + "!");
         playerName += " " + NAME_ENDINGS[new Random().nextInt(NAME_ENDINGS.length - 1)];
-        Player player = GameObjects.createPlayer(playerName);
+        Player player = initiateGame(playerName);
         System.out.println("\nДля тебя создан персонаж. Он будет носить имя " + player.printedName + ".");
         System.out.println(player.printedName + " давно хочет стать Настоящим Магом и перестать подрабатывать в фрилансе, исправляя " +
                 "просроченные скучные баги и колдуя однотипные верстки для сайтов. Но Старый [маг] говорит, что еще рано пользоваться " +
@@ -75,19 +73,19 @@ public class BeMageQuest {
                     break;
                 case "идти":
                 case "и":
-                    player.go(commandWords[1]);
+                    if (commandSyntaxValid(commandWords, 2)) player.go(commandWords[1]);
                     break;
                 case "забрать":
                 case "з":
-                    player.take(commandWords[1]);
+                    if (commandSyntaxValid(commandWords, 2)) player.take(commandWords[1]);
                     break;
                 case "применить":
                 case "п":
-                    player.use(commandWords[1], commandWords[2]);
+                    if (commandSyntaxValid(commandWords, 3)) player.use(commandWords[1], commandWords[2]);
                     break;
                 case "рассмотреть":
                 case "р":
-                    player.inspect(commandWords[1]);
+                    if (commandSyntaxValid(commandWords, 2)) player.inspect(commandWords[1]);
                     break;
                 case "сумка":
                 case "с":
@@ -99,11 +97,13 @@ public class BeMageQuest {
                     printHelp();
                     break;
             }
-            playerCommand = getPlayerInput();
+            if (!player.getWinnerStatus()) {
+                playerCommand = getPlayerInput();
+            }
         }
 
         if (player.getWinnerStatus()) {
-            System.out.println(player.printedName + " , берет в руки кристалл и завороженно смотрит на него. Внутри кристалла" +
+            System.out.println(player.printedName + " берет в руки кристалл и завороженно смотрит на него. Внутри кристалла" +
                     " видны искрящиеся звезды, напоминающие одновременно галактику и ярый поток логов после старта сервера. " +
                     "Кристалл теплый и совсем легкий. По руке проходит мелкая дрожь и кажется что сила наполняет " + player.printedName +
                     " могуществом. Но оказывается что это откуда-то взявшаяся лягушка села на руку и бессовестно гадит, палясь на кристалл. " +
@@ -119,5 +119,96 @@ public class BeMageQuest {
         for (String s : COMMANDS_HELP) {
             System.out.println(s);
         }
+    }
+
+    private static boolean commandSyntaxValid(Object[] array, int minimumWords) {
+        if (array.length >= minimumWords) return true;
+        else {
+            printHelp();
+            return false;
+        }
+    }
+
+    private static Player initiateGame(String playerName) {
+        Item well = new Item("колодец", "Глубокий и пахнет сыростью. Интересно, а старик воду фильтрует прежде чем пить?", false);
+        Item mage = new Item("маг", "Храпит, старый хрен. Как бы у тебя кристалл вытащить?", false);
+        Item burner = new Item("горелка", "Большая, но еще теплая. Наверняка недавно работала. Интересно," +
+                " ее можно использовать не по назначению?", false);
+
+        Item frog = new Item("лягушка", "Тыкаешь - квакает. Не трогаешь - сидит и внимательно на тебя смотрит.", true);
+        Item frogAndMarker = new Item("лягушка", "Перестала квакать и заметно удлиннилась. Наверное, маркер мешается.", true);
+        Item crystal = new Item("кристалл", "Такой глубокий, синий цвет. Так и манит окунуться и забыться.", true);
+        Item bucket = new Item("ведро", "Ржавое, но без дырок. Еще послужит, если использовать осторожно.", true);
+        Item bucketAndChain = new Item("ведро", "С цепью кажется от него будет больше пользы чем без. Но толку от цепи, валяющейся на дне?", true);
+        Item chainedBucket = new Item("ведро", "Цепь крепко припаяна. Но зачем?", true);
+        Item bucketAndWater = new Item("ведро", "Полное воды. Хоть цветы поливай, хоть себя, хоть лягушку топи.", true);
+        Item chain = new Item("цепь", "Длинная и легкая. Вот бы такую куда-нибудь закинуть!", true);
+        Item marker = new Item("маркер", "Черный, затасканный. Наверное он несмываемый, потому что пахнет бодряще.", true);
+
+        ArrayList<Combo> combos = new ArrayList<>();
+        combos.add(new Combo(frog, marker, frogAndMarker, "", true, true));
+        combos.add(new Combo(frog, well, null, "'Что я там забыла? Сам туда лезь.', - внезапно говорит " +
+                "лягушка человеческим голосом. Причем и не женским и не мужским.", false, false));
+        combos.add(new Combo(frog, mage, null, "Лягушка шлепается на лицо старику и долго елозит по нему, " +
+                "но тот не просыпается. Лягушка грустнеет и возвращается к хозяину.", false, false));
+        combos.add(new Combo(frog, bucket, null, "Лягушка смотрит на хозяина как на идиота и не понимает " +
+                " зачем ей прыгать в пустое ведро.", false, false));
+        combos.add(new Combo(frog, crystal, null, "Лягушка садится на кристалл и резко начинает синеть. " +
+                "Потом крепко выругивается, кастует себе портал и исчезает в нем.", true, false));
+        combos.add(new Combo(frog, bucketAndWater, null, "Лягцшка радостно плюхается в ведро и долго там " +
+                "плещется. Потом довольная вылезает обратно и возвращается к хозяину.", false, false));
+
+        combos.add(new Combo(frogAndMarker, bucketAndWater, null, "Лягушка плюхается в воду. " +
+                "Пытается поплавать, но благодаря маркеру постоянно всплывает. Она просится обратно на руки " +
+                "и персонаж забирает ее из ведра.", false, false));
+
+        combos.add(new Combo(chain, bucket, bucketAndChain, "Цепь положена в ведро. " +
+                "Но это выглядит как-то странно. Может лучше прикрепить ее понадежнее?", true, true));
+        combos.add(new Combo(bucketAndChain, burner, chainedBucket, "Цепь приварена к ведру.", true, false));
+        combos.add(new Combo(chainedBucket, well, bucketAndWater, "В ведро набрана до краев колодезная вода.", true, false));
+        combos.add(new Combo(bucketAndWater, mage, crystal, "Маг щедро обливается студеной водой " +
+                "из ржавого ведра. Он что-то сурово мычит и переворачивается на другой бок." +
+                "откуда-то из-под его пазухи на пол выпадает что-то блеснувшшее синим цветом.", false, false));
+
+        combos.add(new Combo(marker, frog, null, "Лягушке нарисовали контуры очков. Теперь она похожа " +
+                "на разработчика квеста.", false, false));
+        combos.add(new Combo(marker, bucket, null, "Ведро аккуратно помечается именем хозяина.  " +
+                "Так оно выглядит гораздо солиднее.", false, false));
+        combos.add(new Combo(marker, mage, null, "На проплешине старика компактно дублируется сегодняшний лог с дев сервера. " +
+                "На лбу у него теперь красуется надпись: 'PASSED WITH MINOR DEFECTS'.", false, false));
+
+        ArrayList<Location> locations = new ArrayList<>();
+
+        Location villageRoom = new Location("комната", "Это комната старика. Сам он валяется на тахте и громко храпит. " +
+                "Хорошо бы проветрить помещение, дышать совсем нечем. Как бы выудить у него кристалл?");
+        villageRoom.addItem(mage);
+        locations.add(villageRoom);
+
+        Location villageLoft = new Location("чердак", "Это чердак старого дома. Тут пыльно и незапыленная только узкая дорожка " +
+                "от лестницы к горелке.");
+        villageLoft.addItem(burner);
+        locations.add(villageLoft);
+
+        Location garden = new Location("сад", "Это сад. Как тут свежо и хорошо! Неохота возвращаться в дом, жить бы прямо тут, на улице.");
+        garden.addItem(frog);
+        garden.addItem(well);
+        garden.addItem(bucket);
+        garden.addItem(chain);
+        locations.add(garden);
+
+        villageRoom.addPath(Directions.восток, garden);
+        villageRoom.addPath(Directions.наверх, villageLoft);
+
+        villageLoft.addPath(Directions.вниз, villageRoom);
+
+        garden.addPath(Directions.запад, villageRoom);
+
+        ComboWarehouse.setCombos(combos);
+
+        Inventory playerInventory = new Inventory();
+        playerInventory.add(marker);
+        Player player = new Player(playerName, playerInventory, villageRoom);
+
+        return player;
     }
 }

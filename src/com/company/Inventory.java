@@ -1,13 +1,12 @@
 package com.company;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Inventory {
-    private final List<Item> items;
+    private final Set<Item> items;
 
     public Inventory() {
-        items = new ArrayList<>();
+        items = new HashSet<>();
     }
 
     public void add(Item item) {
@@ -27,13 +26,16 @@ public class Inventory {
         return null;
     }
 
-    public String getPrintedItems() {
+
+    @Override
+    public String toString() {
         StringBuilder printedItems = new StringBuilder();
-        for (int i = 0; i < items.size(); i++) {
-            printedItems.append(items.get(i).printedName);
+        int i = 0;
+        for (Item item: items) {
+            printedItems.append(item.printedName);
             if (i + 1 < items.size()) printedItems.append(", ");
         }
-        System.out.println(printedItems);
         return printedItems.toString();
     }
+
 }

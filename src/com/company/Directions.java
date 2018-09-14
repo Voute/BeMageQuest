@@ -6,5 +6,12 @@ public enum Directions {
     запад,
     восток,
     наверх,
-    вниз
+    вниз;
+
+    public static Directions findDirectionByName(String directionName) {
+        for (Directions direction : values()) {
+            if (direction.name().equals(directionName)) return direction;
+        }
+        return null;
+    }
 }

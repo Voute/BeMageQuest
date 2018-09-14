@@ -19,8 +19,8 @@ public class Location {
         inventory = new Inventory();
     }
 
-    public String getPrintedItems() {
-        return inventory.getPrintedItems();
+    public String getAllItemsDescription() {
+        return inventory.toString();
     }
 
     public Item findItemByName(String itemName) {
