@@ -75,11 +75,32 @@ public class GameObjects {
                 "На у него теперь красуется: 'PASSED WITH MINOR DEFECTS'.", false, false));
 
         locations = new ArrayList<>();
-        locations.add(new Location("", "", new Inventory(), new HashMap<Directions, Location>()));
 
-        playerStartLocation = new Location("", "", new Inventory(), new HashMap<Directions, Location>());
-        playerStartLocation = new Location("", "", new Inventory(), new HashMap<Directions, Location>());
-        playerStartLocation = new Location("", "", new Inventory(), new HashMap<Directions, Location>());
+        Location villageRoom = new Location("комната", "Это комната старика. Сам он валяется на тахте и громко храпит. " +
+                "Хорошо бы проветрить помещение, дышать совсем нечем. Как бы выудить у него кристалл?");
+        villageRoom.addItem(mage);
+        locations.add(villageRoom);
+
+        Location villageLoft = new Location("чердак", "Это чердак старого дома. Тут пыльно и незапыленная только узкая дорожка " +
+                "от лестницы к горелке.");
+        villageLoft.addItem(burner);
+        locations.add(villageLoft);
+
+        Location garden = new Location("сад", "Это сад. Как тут свежо и хорошо! Неохота возвращаться в дом, жить бы прямо тут, на улице.");
+        garden.addItem(frog);
+        garden.addItem(well);
+        garden.addItem(bucket);
+        garden.addItem(chain);
+        locations.add(garden);
+
+        villageRoom.addPath(Directions.восток, garden);
+        villageRoom.addPath(Directions.наверх, villageLoft);
+
+        villageLoft.addPath(Directions.вниз, villageRoom);
+
+        garden.addPath(Directions.запад, villageRoom);
+
+        playerStartLocation = villageRoom;
         playerStartInventory = new Inventory();
         playerStartInventory.add(marker);
     }

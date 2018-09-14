@@ -18,7 +18,6 @@ public class Player {
 
     public void lookAround() {
         System.out.println(printedName + " осматривается вокруг себя.");
-        System.out.println(location.description);
         String locationItemsOutput = location.getPrintedItems();
         if (locationItemsOutput == "") {
             System.out.println("К сожалению тут нет ничего, на что стоило бы еще обратить внимание.");
@@ -30,7 +29,14 @@ public class Player {
     }
 
     public void go(String direction) {
-// todo:
+        Location newLocation = location.getLocation(Directions.valueOf(direction));
+        if (newLocation != null) {
+            location = newLocation;
+            System.out.println(printedName + " перемещается в " + newLocation.printedName);
+            System.out.println(newLocation.description);
+        } else {
+            System.out.println(printedName + " пытается пойти по направлению " + direction + ", но там некуда идти.");
+        }
     }
 
     public void take(String itemName) {
@@ -39,12 +45,8 @@ public class Player {
             System.out.println(printedName + " ищет вокруг себя [" + itemName + "], но не находит ничего похожего.");
         } else {
             if (location.removeItem(item)) {
-                if (item.name.equals("кристалл")) {
-                    isWinner = true;
-                } else {
-                    inventory.add(item);
-                    System.out.println(printedName + " берет " + item.printedName + " и прячет куда-то в одежду.");
-                }
+                inventory.add(item);
+                System.out.println(printedName + " берет " + item.printedName + " и прячет куда-то в одежду.");
             } else {
                 System.out.println(printedName + "пытается взять " + item.printedName + ", но что-то ему мешает. Не то вес, не то boolean значение поля предмета.");
             }
@@ -73,7 +75,12 @@ public class Player {
                 } else {
                     Item newItem = combo.result;
                     System.out.println(combo.message);
-                    inventory.add(newItem);
+                    if (newItem != null) {
+                        inventory.add(newItem);
+                        if (newItem.name.equals("кристалл")) {
+                            isWinner = true;
+                        }
+                    }
                     if (combo.removeObjectAfterUsage) {
                         inventory.remove(objectItem);
                     }

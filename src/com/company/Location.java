@@ -8,15 +8,15 @@ public class Location {
     final String name;
     final String printedName;
     final String description;
-    final Map<Directions, Location> paths;
+    private final Map<Directions, Location> paths;
     private final Inventory inventory;
 
-    public Location(String name, String description, Inventory inventory, Map<Directions, Location> paths) {
+    public Location(String name, String description) {
         this.name = name;
         printedName = "*" + name + "*";
         this.description = description;
-        this.inventory = inventory;
-        this.paths = paths;
+        paths = new HashMap<>();
+        inventory = new Inventory();
     }
 
     public String getPrintedItems() {
@@ -34,4 +34,15 @@ public class Location {
         return false;
     }
 
+    public void addPath(Directions direction, Location location) {
+        paths.put(direction, location);
+    }
+
+    public void addItem(Item item) {
+        inventory.add(item);
+    }
+
+    public Location getLocation(Directions direction) {
+        return paths.get(direction);
+    }
 }
