@@ -33,7 +33,8 @@ public class Inventory {
         int i = 0;
         for (Item item: items) {
             printedItems.append(item.printedName);
-            if (i + 1 < items.size()) printedItems.append(", ");
+            if ((i + 1) < items.size()) printedItems.append(", ");
+            i++;
         }
         return printedItems.toString();
     }
