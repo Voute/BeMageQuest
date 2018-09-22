@@ -1,7 +1,11 @@
 package com.company;
 
+import com.sun.deploy.util.SystemUtils;
+
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -24,6 +28,7 @@ public class BeMageQuest {
     public static void main(String[] args) throws IOException {
 
         consoleInput = new Scanner(System.in);
+        consoleInput.useLocale(new Locale("ru"));
         System.out.println("Добро пожаловать в Be Mage Quest!");
         String playerName = getPlayerInput("Как твое имя?");
         System.out.println("Приветствую тебя, " + playerName + "!");
@@ -48,7 +53,13 @@ public class BeMageQuest {
         while (userCommand.equals("")) {
             userCommand = consoleInput.nextLine();
         }
-        return userCommand;
+//        try {
+//            userCommand = new String(userCommand.getBytes(), "windows-1251");
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        } finally {
+            return userCommand;
+//        }
     }
 
     private static String getPlayerInput() {
@@ -151,7 +162,7 @@ public class BeMageQuest {
         // операции с лягушкой
         combos.add(new Combo(frog, marker,
                 frogAndMarker,
-                "",
+                "Какой длинный маркер... Но ничего, поместился.",
                 true,
                 true
         ));
@@ -185,7 +196,7 @@ public class BeMageQuest {
         ));
         combos.add(new Combo(frog, bucketAndWater,
                 null,
-                "Лягцшка радостно плюхается в ведро и долго там " +
+                "Лягушка радостно плюхается в ведро и долго там " +
                 "плещется. Потом довольная вылезает обратно и возвращается к хозяину.",
                 false,
                 false
@@ -223,7 +234,7 @@ public class BeMageQuest {
         combos.add(new Combo(bucketAndWater, mage,
                 crystal, "Маг щедро обливается студеной водой " +
                 "из ржавого ведра. Он что-то сурово мычит и переворачивается на другой бок." +
-                "откуда-то из-под его пазухи на пол выпадает что-то блеснувшшее синим цветом.",
+                "Откуда-то из-под его пазухи на пол выпадает что-то блеснувшшее синим цветом.",
                 false,
                 false
         ));

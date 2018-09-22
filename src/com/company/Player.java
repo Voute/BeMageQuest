@@ -55,7 +55,11 @@ public class Player {
         } else {
             if (location.removeItem(item)) {
                 inventory.add(item);
-                System.out.println(printedName + " берет " + item.printedName + " и прячет куда-то в одежду.");
+                if (item.name.equals("кристалл")) {
+                    isWinner = true;
+                } else {
+                    System.out.println(printedName + " берет " + item.printedName + " и прячет куда-то в одежду.");
+                }
             } else {
                 System.out.println(printedName + " пытается взять " + item.printedName + ", но что-то ему мешает. Не то вес, не то boolean значение поля предмета.");
             }
@@ -90,9 +94,10 @@ public class Player {
         Item newItem = combo.result;
         System.out.println(combo.message);
         if (newItem != null) {
-            inventory.add(newItem);
             if (newItem.name.equals("кристалл")) {
-                isWinner = true;
+                location.addItem(newItem);
+            } else {
+                inventory.add(newItem);
             }
         }
         if (combo.removeObjectAfterUsage) {
